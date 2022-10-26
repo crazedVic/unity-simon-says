@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
@@ -16,6 +17,9 @@ public class GameManager : MonoBehaviour
 
     [SerializeField]
     GameObject score;
+
+    [SerializeField]
+    Slider speedSlider;
 
     [SerializeField]
     GameObject highScore;
@@ -33,6 +37,7 @@ public class GameManager : MonoBehaviour
     bool showSequence = false;
     bool showingSequence = false;
     int currentIndex = 0;
+    float sequenceSpeed = 1.0f;
 
     List<int> sequence = new List<int>();
 
@@ -127,11 +132,11 @@ public class GameManager : MonoBehaviour
         foreach (int x in sequence)
         {
             //yield on a new YieldInstruction that waits for 5 seconds.
-            yield return new WaitForSeconds(1);
+            yield return new WaitForSeconds(sequenceSpeed);
 
             lightenUp(x);
 
-            yield return new WaitForSeconds(1);
+            yield return new WaitForSeconds(sequenceSpeed);
             restoreColors();
         }
         // once sequence completes, reset currentIndex
@@ -220,6 +225,11 @@ public class GameManager : MonoBehaviour
 
         // if sequence never broken then get next color
 
+    }
+
+    public void onSliderChange()
+    {
+        sequenceSpeed = speedSlider.value;
     }
 
     public void GameOver()
