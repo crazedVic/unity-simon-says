@@ -10,7 +10,7 @@ using Random = UnityEngine.Random;
 public class GameManager : MonoBehaviour
 {
     public static Action OnGameStart;
-    public static Action<double> PlaySound;
+    public static Action<double, float> PlaySound;
     
     [SerializeField]
     private TextMeshProUGUI scoreLabel;
@@ -40,7 +40,7 @@ public class GameManager : MonoBehaviour
     private bool showSequence = false;
     private bool showingSequence = false;
     private int currentIndex = 0;
-    public static float sequenceSpeed = 1.0f;
+    private float sequenceSpeed = 1.0f;
 
 
     // blue high g = G4 = 495,
@@ -141,7 +141,7 @@ public class GameManager : MonoBehaviour
 
         buttons[index].image.color = Color.HSVToRGB(H, S, 1);
 
-        PlaySound?.Invoke(frequencies[index]);
+        PlaySound?.Invoke(frequencies[index],sequenceSpeed);
     }
 
     IEnumerator enlighten()
@@ -197,12 +197,14 @@ public class GameManager : MonoBehaviour
 
 
     public void OnClick(int index)
-    { 
-       
+    {
+        
         // if sequence being shown ignore clicks
         // TODO: should probably disable buttons during this state.
         if (showingSequence)
             return;
+
+        PlaySound?.Invoke(frequencies[index], 0.3f);
 
         if (sequence[currentIndex] == index)
         {
@@ -295,5 +297,13 @@ public class GameManager : MonoBehaviour
         gameStarted = true;
         showSequence = true;
         RestoreColors();
+    }
+
+    public void OnResetHighScoreClick()
+    {
+        Debug.Log("resetting high score");
+        currentHighScore = 0;
+        PlayerPrefs.SetInt("highScore", 0);
+        highScoreLabel.text = currentHighScore.ToString();
     }
 }
