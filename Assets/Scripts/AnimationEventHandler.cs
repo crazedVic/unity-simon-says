@@ -1,26 +1,20 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class AnimationEventHandler : MonoBehaviour
 {
-
-    [SerializeField]
-    GameManager gameManager;
-
-    private void Start()
-    {
-        Debug.Assert(gameManager != null);
-    }
+    public static Action OnScoreAdd;
+    public static Action OnHighScoreChangeEvent;
 
     public void onScoreChangeEvent()
     {
-        gameManager.currentScore++;
+        OnScoreAdd?.Invoke();
     }
 
     public void onHighScoreChangeEvent()
     {
-        gameManager.currentHighScore = gameManager.currentScore;
-        gameManager.currentScore = 0;
+        OnHighScoreChangeEvent?.Invoke();
     }
 }

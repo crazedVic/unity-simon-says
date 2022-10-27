@@ -517,7 +517,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87a0bc1873db0434f943d1c219d20b80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameManager: {fileID: 1282475917}
 --- !u!95 &307408685
 Animator:
   serializedVersion: 4
@@ -1190,7 +1189,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87a0bc1873db0434f943d1c219d20b80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameManager: {fileID: 1282475917}
 --- !u!1 &618282870
 GameObject:
   m_ObjectHideFlags: 0
@@ -2171,10 +2169,10 @@ MonoBehaviour:
   highScore: {fileID: 307408682}
   startButton: {fileID: 618282870}
   buttons:
-  - {fileID: 2078549767}
-  - {fileID: 375775336}
-  - {fileID: 54525929}
-  - {fileID: 1078072435}
+  - {fileID: 2078549769}
+  - {fileID: 375775338}
+  - {fileID: 54525931}
+  - {fileID: 1078072437}
   currentScore: 0
   currentHighScore: 0
 --- !u!4 &1282475918

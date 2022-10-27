@@ -9,44 +9,46 @@ using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
 {
+    public static Action OnGameStart;
+    
     [SerializeField]
-    TextMeshProUGUI scoreLabel;
+    private TextMeshProUGUI scoreLabel;
 
     [SerializeField]
-    TextMeshProUGUI highScoreLabel;
+    private TextMeshProUGUI highScoreLabel;
 
     [SerializeField]
-    GameObject score;
+    private GameObject score;
 
     [SerializeField]
-    Slider speedSlider;
+    private Slider speedSlider;
 
     [SerializeField]
-    GameObject highScore;
+    private GameObject highScore;
 
     [SerializeField]
-    GameObject startButton;
+    private GameObject startButton;
 
     [SerializeField]
-    GameObject[] buttons;
+    private Button[] buttons;
 
     public int currentScore = 0;
     public int currentHighScore = 0;
-    bool gameStarted = false;
-    bool gameLoaded = false;
-    bool showSequence = false;
-    bool showingSequence = false;
-    int currentIndex = 0;
-    float sequenceSpeed = 1.0f;
+    private bool gameStarted = false;
+    private bool gameLoaded = false;
+    private bool showSequence = false;
+    private bool showingSequence = false;
+    private int currentIndex = 0;
+    private float sequenceSpeed = 1.0f;
 
-    List<int> sequence = new List<int>();
+    private List<int> sequence = new List<int>();
 
     // array that replaces working array once workingarray size drops below 25% in size
-    static int[] originalArray = { 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3 };
+    private static int[] originalArray = { 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3 };
 
     // List that fuels the random selection, however, as numbers are drawn they are removed
     // thereby reducing chances of that number being drawn again right away, offering more variety
-    List<int> workingList = new List<int>(originalArray);
+    private List<int> workingList = new List<int>(originalArray);
 
     public enum ButtonColor
     {
@@ -54,6 +56,25 @@ public class GameManager : MonoBehaviour
         Green,
         Red,
         Yellow
+    }
+
+    private void Awake()
+    {
+        AnimationEventHandler.OnScoreAdd += OnScoreAdd;
+        AnimationEventHandler.OnHighScoreChangeEvent += OnHighScoreChangeEvent;
+    }
+
+    private void OnHighScoreChangeEvent()
+    {
+        currentHighScore = currentScore;
+        currentScore = 0;
+        highScoreLabel.text = currentHighScore.ToString();
+    }
+
+    private void OnScoreAdd()
+    {
+        currentScore++;
+        scoreLabel.text = currentScore.ToString();
     }
 
     // Start is called before the first frame update
@@ -65,9 +86,8 @@ public class GameManager : MonoBehaviour
         Debug.Assert(highScore != null);
 
         // restore colors to default brightness
-        restoreColors();
+        RestoreColors();
         LoadGame();
-
     }
 
     void LoadGame()
@@ -96,36 +116,28 @@ public class GameManager : MonoBehaviour
     {
         if (gameStarted)
         {
-            scoreLabel.text = currentScore.ToString();
-            highScoreLabel.text = currentHighScore.ToString();
 
             // loop through list if user completed previous sequence
             if (showSequence)
             {
-                showSequence = false;
-                showingSequence = true;
                 StartCoroutine(enlighten());
-              
             }
-          
         }
-        
     }
 
     void lightenUp(int index)
     {
         float H, S, V;
 
-        Color.RGBToHSV(buttons[index].
-            GetComponent<UnityEngine.UI.Image>().color, out H, out S, out V);
+        Color.RGBToHSV(buttons[index].image.color, out H, out S, out V);
 
-        buttons[index].GetComponent<UnityEngine.UI.Image>().color =
-            Color.HSVToRGB(H, S, 1);
-        
+        buttons[index].image.color = Color.HSVToRGB(H, S, 1);
     }
 
     IEnumerator enlighten()
     {
+        showSequence = false;
+        showingSequence = true;
         //Print the time of when the function is first called.
         //Debug.Log("Started Coroutine at timestamp : " + Time.time);
 
@@ -137,7 +149,7 @@ public class GameManager : MonoBehaviour
             lightenUp(x);
 
             yield return new WaitForSeconds(sequenceSpeed);
-            restoreColors();
+            RestoreColors();
         }
         // once sequence completes, reset currentIndex
         // and re-enable button functioality
@@ -147,19 +159,18 @@ public class GameManager : MonoBehaviour
         //Debug.Log("Finished Coroutine at timestamp : " + Time.time);
     }
 
-    void restoreColors()
+    void RestoreColors()
     {
         for (int x = 0; x < buttons.Length; ++x)
         {
             float H, S, V;
-            Color.RGBToHSV(buttons[x].GetComponent<UnityEngine.UI.Image>().color, out H, out S, out V);
-            buttons[x].GetComponent<UnityEngine.UI.Image>().color =
-                Color.HSVToRGB(H, S, 0.64f);
+            Color.RGBToHSV(buttons[x].image.color, out H, out S, out V);
+            buttons[x].image.color = Color.HSVToRGB(H, S, 0.64f);
         }
     }
 
-    int getNextButton() {
-
+    int getNextButton() 
+    {
         // add to sequence
         int roll = Random.Range(0, workingList.Count);
         int selectedButton = workingList[roll];
@@ -256,18 +267,17 @@ public class GameManager : MonoBehaviour
             startButton.SetActive(false);
             currentIndex = 0;
             currentScore = 0;
-            restoreColors();
             sequence.Add(getNextButton());
-            showSequence = true;
-            gameStarted = true;
+            
+            OnGameStart?.Invoke();
         }
         else
         {
             startButton.SetActive(false);
-            restoreColors();
-            showSequence = true;
-            gameStarted = true;
             gameLoaded = false;
         }
+        gameStarted = true;
+        showSequence = true;
+        RestoreColors();
     }
 }
