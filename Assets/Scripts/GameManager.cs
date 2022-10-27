@@ -176,6 +176,12 @@ public class GameManager : MonoBehaviour
         int selectedButton = workingList[roll];
         workingList.RemoveAt(roll);
 
+        // if we've used up most of the numbers in the worklist, reset it
+        if (workingList.Count < 4)
+        {
+            workingList = new List<int>(originalArray);
+        }
+
         return selectedButton;
     }
 
