@@ -10,6 +10,7 @@ using Random = UnityEngine.Random;
 public class GameManager : MonoBehaviour
 {
     public static Action OnGameStart;
+    public static Action<double> PlaySound;
     
     [SerializeField]
     private TextMeshProUGUI scoreLabel;
@@ -39,7 +40,14 @@ public class GameManager : MonoBehaviour
     private bool showSequence = false;
     private bool showingSequence = false;
     private int currentIndex = 0;
-    private float sequenceSpeed = 1.0f;
+    public static float sequenceSpeed = 1.0f;
+
+
+    // blue high g = G4 = 495,
+    // green low g = G4 = 392
+    // red middle c = c4 = 261
+    // yellow e = e5 =  329
+    private float[] frequencies = { 422, 392, 261, 329 };
 
     private List<int> sequence = new List<int>();
 
@@ -132,6 +140,8 @@ public class GameManager : MonoBehaviour
         Color.RGBToHSV(buttons[index].image.color, out H, out S, out V);
 
         buttons[index].image.color = Color.HSVToRGB(H, S, 1);
+
+        PlaySound?.Invoke(frequencies[index]);
     }
 
     IEnumerator enlighten()
